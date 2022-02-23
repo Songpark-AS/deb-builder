@@ -28,7 +28,6 @@ def build(input_directory, output_directory):
 
 def upload_to_nexus(debfile, repo_url, username, password):
     print("Uploading package to nexus")
-    print(f'curl -u "{username}:{password}" -H "Content-Type: multipart/form-data" --data-binary "@{debfile}" "{repo_url}"')
     os.system(f'curl -u "{username}:{password}" -H "Content-Type: multipart/form-data" --data-binary "@{debfile}" "{repo_url}"')
 
 def main():

@@ -1,0 +1,61 @@
+= How to create and upload a debian package of Teleporter firmware
+
+== Requirements
+
+* dpkg-deb
+* curl
+
+== Prepare the package
+
+Name the directory like this <package-name>_<version>_<arch> for instance: teleporter-fw_1.0.0_all
+
+----
+teleporter-fw_1.0.0_all
+├── boot
+│   ├── BOOT.bin
+│   ├── devicetree.dtb
+│   └── uImage
+├── DEBIAN
+│   ├── control
+│   └── preinst
+└── usr
+    └── local
+        └── bin
+            └── connect
+----
+
+Treat that directory as the root of the linux OS so if you want to place a file in `/usr/local/bin` just add a file in `[your_deb_package_directory]/usr/local/bin`
+
+apt will overwrite existing files.
+
+In the `DEBIAN` directory you can add a `preinst` and a `postinst` script that will be run before and after the installation of the package.
+
+The `DEBIAN/control` file contains metainfo about the package:
+
+----
+Package: teleporter-fw
+Version: 1.0.0
+Architecture: all
+Essential: no
+Priority: optional
+Maintainer: Inonit AS
+Description: Teleporter firmware package
+----
+
+NOTE: You'll need to bump the version number in the `control` file when creating a new version.
+
+When you have prepared all of the files go out of the deb package directory and change the ownership of all of the files in the directory to be owned by root like this:
+
+`cd ..`
+
+`sudo chown -R root.root [your_deb_package_directory]`
+
+== Create the packagefile
+
+When you are done preparing the package directory, run `sudo dpkg-deb --build [your_deb_package_directory]` and it'll create a `.deb` file.
+
+== Upload to apt repo
+
+When you have created your `.deb` file you can upload it to the apt repo on nexus with this curl command:
+
+`curl -u "[your_nexus_username]:[your_nexus_password]" -H "Content-Type: multipart/form-data" --data-binary "@./[your_deb_file]" "https://nexus.inonit.no/repository/[the_apt_repo]"`

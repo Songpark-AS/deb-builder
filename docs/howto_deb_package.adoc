@@ -11,20 +11,24 @@ Name the directory like this <package-name>_<version>_<arch> for instance: telep
 
 ----
 teleporter-fw_1.0.0_all
-├── boot
-│   ├── BOOT.bin
-│   ├── devicetree.dtb
-│   └── uImage
 ├── DEBIAN
 │   ├── control
+│   ├── postinst
 │   └── preinst
+├── tmp
+│   └── tp-boot
+│       ├── BOOT.bin
+│       ├── devicetree.dtb
+│       └── uImage
 └── usr
     └── local
-        └── bin
-            └── connect
+        ├── bin
+        │   └── connect
+        └── tpx
+            └── tpx.jar
 ----
 
-Treat that directory as the root of the linux OS so if you want to place a file in `/usr/local/bin` just add a file in `[your_deb_package_directory]/usr/local/bin`
+Treat that directory as the root of the linux OS so if you want to place a file in `/usr/local/bin` just add a file in `your_deb_package_directory/usr/local/bin`
 
 apt will overwrite existing files.
 
@@ -48,14 +52,31 @@ When you have prepared all of the files go out of the deb package directory and 
 
 `cd ..`
 
-`sudo chown -R root.root [your_deb_package_directory]`
+`sudo chown -R root.root your_deb_package_directory`
 
 == Create the packagefile
 
-When you are done preparing the package directory, run `sudo dpkg-deb --build [your_deb_package_directory]` and it'll create a `.deb` file.
+When you are done preparing the package directory, run `sudo dpkg-deb --build your_deb_package_directory` and it'll create a `.deb` file.
 
 == Upload to apt repo
 
 When you have created your `.deb` file you can upload it to the apt repo on nexus with this curl command:
 
-`curl -u "[your_nexus_username]:[your_nexus_password]" -H "Content-Type: multipart/form-data" --data-binary "@./[your_deb_file]" "https://nexus.inonit.no/repository/[the_apt_repo]"`
+`curl -u "your_nexus_username:your_nexus_password" -H "Content-Type: multipart/form-data" --data-binary "@./your_deb_file.deb" "https://nexus.inonit.no/repository/the_apt_repo"`
+
+== Deb builder script
+
+Alternatively you can use the deb builder script to automate the chowning, building and uploading to nexus.
+
+=== Installation
+
+1. Install the dependencies to the system by running `pipenv install --system`
+2. Install the script itself by running `pip install -e .`
+
+=== Usage
+
+NOTE: Since all of the files needs to be owned by root you must run the script as root.
+
+You'll need to have a directory prepared where the `DEBIAN/control` file exists and valid.
+
+Run `deb-builder --help` for instructions on how to use the script.

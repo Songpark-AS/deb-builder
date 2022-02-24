@@ -1,0 +1,4 @@
+# Sample files
+
+Here are some sample files of the scripts `preinst` and `postinst` that could be used in the `DEBIAN` directory to run before and after installation of the package.
+

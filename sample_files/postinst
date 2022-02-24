@@ -1,0 +1,4 @@
+#!/bin/bash
+echo "Replacing boot files"
+mv /tmp/tp-boot/* /boot
+

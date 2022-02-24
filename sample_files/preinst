@@ -1,0 +1,12 @@
+#!/bin/bash
+
+echo "Making filesystem writeable"
+mount -o remount,rw /
+
+echo "Mounting boot partition"
+mount /dev/mmcblk0p1 /boot
+
+echo "Stopping songpark services"
+systemctl stop sp-tpx
+systemctl stop sp-bridgeprogram
+
